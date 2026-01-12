@@ -2,25 +2,21 @@ import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
 import { getAuth, Auth } from "firebase/auth";
 import { getFirestore, Firestore } from "firebase/firestore";
 
-// The config provided in your snippet
+// Production Firebase Configuration
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY || "AIzaSyAfCrDJdtQz9Qgrl6ncYs_7ouI5DLQW7Mo",
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN || "lrnrn-mvp.firebaseapp.com",
-  projectId: process.env.FIREBASE_PROJECT_ID || "lrnrn-mvp",
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET || "lrnrn-mvp.firebasestorage.app",
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || "637274620020",
-  appId: process.env.FIREBASE_APP_ID || "1:637274620020:web:e1f3340c0a993b895c1121"
+  apiKey: "AIzaSyAfCrDJdtQz9Qgrl6ncYs_7ouI5DLQW7Mo",
+  authDomain: "lrnrn-mvp.firebaseapp.com",
+  projectId: "lrnrn-mvp",
+  storageBucket: "lrnrn-mvp.firebasestorage.app",
+  messagingSenderId: "637274620020",
+  appId: "1:637274620020:web:e1f3340c0a993b895c1121"
 };
 
-// Singleton pattern for Firebase initialization
-let app: FirebaseApp;
-if (!getApps().length) {
-  app = initializeApp(firebaseConfig);
-} else {
-  app = getApp();
-}
+// Strict singleton check for the Firebase app
+const app: FirebaseApp = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// Ensure services are linked to the specific singleton app instance
+// Initialize and export services tied to the singleton app instance
+// This order is critical for component registration
 export const auth: Auth = getAuth(app);
 export const db: Firestore = getFirestore(app);
 

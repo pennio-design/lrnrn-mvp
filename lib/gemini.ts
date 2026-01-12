@@ -1,9 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Curriculum } from "./types";
 
-// Note: Create a new GoogleGenAI instance right before making an API call 
-// to ensure it uses the most up-to-date API key from the environment.
-
 export async function generateCurriculum(answers: Record<string, string>): Promise<Curriculum> {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const prompt = `
@@ -23,6 +20,7 @@ export async function generateCurriculum(answers: Record<string, string>): Promi
     model: 'gemini-3-flash-preview',
     contents: prompt,
     config: {
+      systemInstruction: "You are LRNRN, an elite AI Learning Strategist that specializes in skipping fluff and focusing on project delivery. You build curricula that are high-leverage and opinionated.",
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
@@ -58,7 +56,6 @@ export async function generateCurriculum(answers: Record<string, string>): Promi
 
 export async function attachResources(curriculum: Curriculum): Promise<Curriculum> {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-  // Enhanced prompt to hunt for specific high-quality links
   const prompt = `
     For each of the following learning nodes, identify 2-3 specific high-quality resources from reputable sources like MDN, React.dev, YouTube (Fireship, Theo, WebDevSimplified), or personal blogs (Josh Comeau, Kent C. Dodds).
     Provide exact resource URLs and a reasoning for each selection.
