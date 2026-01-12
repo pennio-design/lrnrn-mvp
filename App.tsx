@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useStore } from './lib/store';
 import { auth } from './lib/firebase';
@@ -9,7 +10,7 @@ import QuestionFlow from './components/QuestionFlow';
 import CurriculumRoadmap from './components/CurriculumRoadmap';
 import AuthForm from './components/AuthForm';
 import UserMenu from './components/UserMenu';
-import { Loader2, RefreshCcw } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 function GeneratingView() {
   return (
@@ -31,18 +32,23 @@ function GeneratingView() {
 }
 
 export default function App() {
-  const { view, user, setUser, setAuthLoading, setCurriculum, curriculum } = useStore();
+  const { view, setUser, setAuthLoading, curriculum, authLoading } = useStore();
 
   useEffect(() => {
+    // Only run the listener once on mount
     const unsubscribe = onAuthStateChanged(auth, async (u) => {
       setUser(u);
       setAuthLoading(false);
       
-      if (u && !curriculum) {
+      if (u) {
         try {
-          const saved = await getLatestCurriculum(u.uid);
-          if (saved) {
-            setCurriculum(saved);
+          // Only fetch if we don't have a curriculum in local state yet
+          const currentCurriculum = useStore.getState().curriculum;
+          if (!currentCurriculum) {
+            const saved = await getLatestCurriculum(u.uid);
+            if (saved) {
+              useStore.setState({ curriculum: saved });
+            }
           }
         } catch (err) {
           console.error("Error fetching initial curriculum:", err);
@@ -50,7 +56,18 @@ export default function App() {
       }
     });
     return () => unsubscribe();
-  }, [user, curriculum]);
+  }, [setUser, setAuthLoading]);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="animate-spin text-amber-500" size={32} />
+          <span className="text-slate-400 font-mono text-xs uppercase tracking-widest">Waking up systems...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <main className="antialiased selection:bg-amber-100 selection:text-amber-900">
@@ -58,10 +75,15 @@ export default function App() {
         <>
           <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-50 border-b border-slate-100">
             <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-              <span className="text-2xl font-black tracking-tighter text-slate-900 italic">LRNRN</span>
+              <span 
+                onClick={() => useStore.getState().reset()} 
+                className="text-2xl font-black tracking-tighter text-slate-900 italic cursor-pointer hover:opacity-80 transition-opacity"
+              >
+                LRNRN
+              </span>
               <div className="flex items-center gap-8">
                 <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-500 uppercase tracking-widest">
-                  <a href="#about" className="hover:text-amber-500">Methodology</a>
+                  <a href="#methodology" className="hover:text-amber-500">Methodology</a>
                 </div>
                 <UserMenu />
               </div>
@@ -70,33 +92,15 @@ export default function App() {
           
           <HeroSection />
           
-          {user && curriculum && (
-            <div className="max-w-5xl mx-auto px-6 -mt-10 mb-20 relative z-10">
-              <button 
-                onClick={() => useStore.getState().setView('curriculum')}
-                className="w-full bg-white border-2 border-amber-500/20 p-6 rounded-3xl shadow-xl flex items-center justify-between hover:border-amber-500 transition-all group"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-amber-100 rounded-2xl text-amber-600">
-                    <RefreshCcw size={24} />
-                  </div>
-                  <div className="text-left">
-                    <span className="block text-xs font-bold text-amber-600 uppercase tracking-widest">Active Strategy</span>
-                    <h3 className="text-xl font-bold text-slate-900">{curriculum.title}</h3>
-                  </div>
-                </div>
-                <div className="bg-slate-900 text-white px-6 py-2 rounded-full font-bold group-hover:scale-105 transition-transform">
-                  Resume Path
-                </div>
-              </button>
-            </div>
-          )}
+          <div id="methodology">
+            <ComparisonTable />
+          </div>
 
-          <ComparisonTable />
           <footer className="bg-slate-50 py-12 px-6 border-t border-slate-100">
-            <div className="max-w-5xl mx-auto text-center">
+            <div className="max-w-5xl mx-auto text-center space-y-4">
+              <span className="text-2xl font-black tracking-tighter text-slate-300 italic">LRNRN</span>
               <p className="text-slate-400 text-sm font-mono uppercase tracking-widest">
-                LRNRN is an experiment in AI-native pedagogical engineering.
+                AI-native pedagogical engineering. Made for makers.
               </p>
             </div>
           </footer>
