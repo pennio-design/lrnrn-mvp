@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
 import { auth } from '../lib/firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { useStore } from '../lib/store';
-import { Loader2, ArrowRight, User, Mail, Lock, Sparkles } from 'lucide-react';
+import { Loader2, ArrowRight, User, Mail, Lock, Sparkles, ChevronLeft } from 'lucide-react';
 
 export default function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
@@ -25,6 +26,7 @@ export default function AuthForm() {
         const cred = await createUserWithEmailAndPassword(auth, email, password);
         await updateProfile(cred.user, { displayName: name });
       }
+      // After login, always return to landing to see the dashboard/hero options
       setView('landing');
     } catch (err: any) {
       setError(err.message);
@@ -34,63 +36,70 @@ export default function AuthForm() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-6 text-white">
+    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-6 text-white relative">
+      <button 
+        onClick={() => setView('landing')}
+        className="absolute top-8 left-8 text-slate-500 hover:text-white flex items-center gap-2 text-sm font-bold transition-colors"
+      >
+        <ChevronLeft size={20} /> Back Home
+      </button>
+
       <div className="w-full max-w-md space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-2 bg-amber-500/10 text-amber-500 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest">
-            <Sparkles size={14} /> LRNRN Profile
+            <Sparkles size={14} /> Identity Verification
           </div>
-          <h1 className="text-4xl font-black">{isLogin ? 'Welcome Back' : 'Create Account'}</h1>
-          <p className="text-slate-400">Save your custom strategies and track progress across devices.</p>
+          <h1 className="text-4xl font-black">{isLogin ? 'Welcome Back' : 'Join LRNRN'}</h1>
+          <p className="text-slate-400">Secure your custom roadmap and progress analytics.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-slate-800 border border-slate-700 p-8 rounded-3xl shadow-2xl space-y-6">
           {!isLogin && (
             <div className="space-y-2">
               <label className="text-sm font-bold text-slate-400 flex items-center gap-2">
-                <User size={14} /> Name
+                <User size={14} /> Full Name
               </label>
               <input 
                 required
                 type="text"
                 value={name}
                 onChange={e => setName(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:border-amber-500 outline-none transition-colors"
-                placeholder="Your name"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:border-amber-500 outline-none transition-colors placeholder:text-slate-700"
+                placeholder="How should we address you?"
               />
             </div>
           )}
 
           <div className="space-y-2">
             <label className="text-sm font-bold text-slate-400 flex items-center gap-2">
-              <Mail size={14} /> Email Address
+              <Mail size={14} /> Email
             </label>
             <input 
               required
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:border-amber-500 outline-none transition-colors"
+              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:border-amber-500 outline-none transition-colors placeholder:text-slate-700"
               placeholder="name@example.com"
             />
           </div>
 
           <div className="space-y-2">
             <label className="text-sm font-bold text-slate-400 flex items-center gap-2">
-              <Lock size={14} /> Password
+              <Lock size={14} /> Secret Key
             </label>
             <input 
               required
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:border-amber-500 outline-none transition-colors"
+              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:border-amber-500 outline-none transition-colors placeholder:text-slate-700"
               placeholder="••••••••"
             />
           </div>
 
           {error && (
-            <div className="text-red-400 text-sm bg-red-400/10 p-3 rounded-lg border border-red-400/20">
+            <div className="text-red-400 text-xs bg-red-400/10 p-3 rounded-xl border border-red-400/20 leading-snug">
               {error}
             </div>
           )}
@@ -98,11 +107,11 @@ export default function AuthForm() {
           <button 
             type="submit"
             disabled={loading}
-            className="w-full bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-slate-900 font-black py-4 rounded-xl flex items-center justify-center gap-2 transition-all"
+            className="w-full bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-slate-900 font-black py-4 rounded-xl flex items-center justify-center gap-2 transition-all transform active:scale-95"
           >
             {loading ? <Loader2 className="animate-spin" /> : (
               <>
-                {isLogin ? 'Sign In' : 'Create Strategy Profile'} <ArrowRight size={18} />
+                {isLogin ? 'Access System' : 'Create Profile'} <ArrowRight size={18} />
               </>
             )}
           </button>
@@ -111,18 +120,11 @@ export default function AuthForm() {
         <div className="text-center">
           <button 
             onClick={() => setIsLogin(!isLogin)}
-            className="text-slate-500 hover:text-white transition-colors text-sm font-medium"
+            className="text-slate-500 hover:text-white transition-colors text-sm font-bold border-b border-transparent hover:border-slate-500 pb-1"
           >
-            {isLogin ? "Don't have an account? Sign up" : "Already have an account? Log in"}
+            {isLogin ? "Need a builder account? Sign up" : "Already registered? Sign in"}
           </button>
         </div>
-        
-        <button 
-          onClick={() => setView('landing')}
-          className="w-full text-slate-600 hover:text-slate-400 transition-colors text-xs uppercase tracking-widest font-bold"
-        >
-          Cancel and return home
-        </button>
       </div>
     </div>
   );
