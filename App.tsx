@@ -39,11 +39,13 @@ export default function App() {
       setAuthLoading(false);
       
       if (u && !curriculum) {
-        const saved = await getLatestCurriculum(u.uid);
-        if (saved) {
-          // We don't auto-force view here to avoid jarring UX, 
-          // but we store it so the user can "Resume"
-          setCurriculum(saved);
+        try {
+          const saved = await getLatestCurriculum(u.uid);
+          if (saved) {
+            setCurriculum(saved);
+          }
+        } catch (err) {
+          console.error("Error fetching initial curriculum:", err);
         }
       }
     });
