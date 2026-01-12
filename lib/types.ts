@@ -1,3 +1,4 @@
+
 export interface ValidationRule {
   validate: (input: string) => boolean | string;
   message: string;
@@ -8,6 +9,7 @@ export interface Question {
   label: string;
   prompt: string;
   placeholder: string;
+  options?: string[]; // Added for selection-based answers
   examples: { good: string; generic: string };
   validation: ValidationRule[];
 }

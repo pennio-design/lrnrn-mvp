@@ -1,26 +1,31 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 import { Curriculum } from "./types";
 
 export async function generateCurriculum(answers: Record<string, string>): Promise<Curriculum> {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  
+  // Transform simplified options into descriptive context for the AI
   const prompt = `
-    Generate a highly opinionated learning curriculum for a student with the following context:
+    Generate a highly opinionated learning curriculum for a student.
+    
     GOAL: ${answers.goal}
-    EXISTING EXPERIENCE: ${answers.level}
-    CONSTRAINTS: ${answers.constraints}
+    EXPERIENCE LEVEL: ${answers.level}
+    TIME COMMITMENT: ${answers.constraints}
 
-    STRATEGIC REQUIREMENTS:
-    - Skip fundamentals they already know based on their experience.
-    - Order by dependency of their project, not traditional CS order.
-    - Each node MUST have a reasoning field (min 100 chars) explaining WHY this step is critical for THEIR specific project.
-    - Be realistic with hours.
+    STRATEGIC INSTRUCTIONS:
+    - The user might have given short answers. Infer their needs based on the "EXPERIENCE LEVEL".
+    - If they say "Total Beginner", include absolute first steps.
+    - If they say "A lot!" or "Pro", skip all basic setup and focus on advanced architecture.
+    - Each learning node MUST have a reasoning field explaining why this specific step helps them reach: "${answers.goal}".
+    - The "path_strategy" field should explain your architectural approach to their goal.
   `;
 
   const response = await ai.models.generateContent({
     model: 'gemini-3-flash-preview',
     contents: prompt,
     config: {
-      systemInstruction: "You are LRNRN, an elite AI Learning Strategist that specializes in skipping fluff and focusing on project delivery. You build curricula that are high-leverage and opinionated.",
+      systemInstruction: "You are LRNRN, an elite AI Learning Strategist. You take simple user inputs and turn them into professional-grade project roadmaps. You are encouraging but technically rigorous.",
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
@@ -57,11 +62,10 @@ export async function generateCurriculum(answers: Record<string, string>): Promi
 export async function attachResources(curriculum: Curriculum): Promise<Curriculum> {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const prompt = `
-    For each of the following learning nodes, identify 2-3 specific high-quality resources from reputable sources like MDN, React.dev, YouTube (Fireship, Theo, WebDevSimplified), or personal blogs (Josh Comeau, Kent C. Dodds).
-    Provide exact resource URLs and a reasoning for each selection.
-
-    CURRICULUM NODES:
+    Find specific high-quality tutorials or docs for these steps:
     ${curriculum.nodes.map(n => n.title).join(', ')}
+    
+    Return a JSON array where each object has "node_title" and an array of "resources".
   `;
 
   const response = await ai.models.generateContent({

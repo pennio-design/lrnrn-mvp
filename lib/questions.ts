@@ -1,55 +1,63 @@
+
 import { Question } from './types';
 
 export const DIAGNOSTIC_QUESTIONS: Question[] = [
   {
     id: 'goal',
-    label: 'The Project Objective',
-    prompt: 'What specific project or capability will you demonstrate to prove you have mastered this skill?',
-    placeholder: 'e.g., A multi-user Kanban board with drag-and-drop and real-time persistence using Firebase.',
+    label: "What's your big idea?",
+    prompt: "Tell us in one short sentence what you want to build or make.",
+    placeholder: "e.g. A game with a cat, or a simple calculator.",
     examples: {
-      good: 'I want to build a calorie tracking mobile app with a barcode scanner using React Native and SQLite.',
-      generic: 'I want to learn how to make mobile apps.'
+      good: "I want to make a website that lists my favorite books.",
+      generic: "I want to learn code."
     },
     validation: [
       {
-        validate: (input) => input.length > 20,
-        message: 'Please be more specific. Generic goals lead to generic curricula.'
-      },
-      {
-        validate: (input) => !['learn', 'understand', 'know'].some(word => input.toLowerCase() === word),
-        message: 'Avoid "learning" as the primary goal. Describe the output.'
+        validate: (input) => input.length > 5,
+        message: "Tell us just a tiny bit more!"
       }
     ]
   },
   {
     id: 'level',
-    label: 'Behavioral Assessment',
-    prompt: 'What is the most complex architecture or logic you have successfully implemented in any domain?',
-    placeholder: 'Explain a technical hurdle you solved or a complex data flow you designed.',
+    label: "How much do you know?",
+    prompt: "Pick the one that sounds most like you right now.",
+    options: [
+      "I'm a total beginner",
+      "I've done a little bit",
+      "I'm pretty good at this",
+      "I'm a pro builder"
+    ],
+    placeholder: "Select an option...",
     examples: {
-      good: 'I built a custom web scraper that handled pagination and rate-limiting using Python and BeautifulSoup.',
-      generic: 'I am a beginner programmer.'
+      good: "Beginner",
+      generic: "None"
     },
     validation: [
       {
-        validate: (input) => input.split(' ').length > 10,
-        message: 'We need more context to skip the basics you already know.'
+        validate: (input) => input.length > 0,
+        message: "Please pick one!"
       }
     ]
   },
   {
     id: 'constraints',
-    label: 'Strategic Constraints',
-    prompt: 'How many hours per week can you realistically commit, and what is your "high-retention" learning format?',
-    placeholder: 'e.g., 10 hours/week, prefer deep-dive text documentation over video tutorials.',
+    label: "How hard do you want to work?",
+    prompt: "How much time can you spend on this every week?",
+    options: [
+      "Just 1-2 hours (Slow & Steady)",
+      "3-5 hours (The Normal Way)",
+      "10+ hours (Super Fast!)"
+    ],
+    placeholder: "Select an option...",
     examples: {
-      good: '5 hours per week. I retain best through interactive labs and text-based deep dives.',
-      generic: 'As much as possible, video tutorials.'
+      good: "5 hours",
+      generic: "1"
     },
     validation: [
       {
-        validate: (input) => /\d+/.test(input),
-        message: 'Please include a specific hourly commitment.'
+        validate: (input) => input.length > 0,
+        message: "Pick your speed!"
       }
     ]
   }
