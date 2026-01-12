@@ -1,3 +1,4 @@
+
 export interface ValidationRule {
   validate: (input: string) => boolean | string;
   message: string;
@@ -32,29 +33,23 @@ export interface CuratedResource {
 }
 
 export interface Curriculum {
-  id?: string;
   title: string;
   description: string;
   path_strategy: string;
   nodes: CurriculumNode[];
   total_hours: number;
   completion_milestone: string;
-  timestamp?: number;
 }
 
 export interface AppState {
-  view: 'landing' | 'questions' | 'generating' | 'curriculum' | 'auth';
+  view: 'landing' | 'questions' | 'generating' | 'curriculum';
   currentQuestionIndex: number;
   answers: Record<string, string>;
   curriculum: Curriculum | null;
-  user: any | null; // Firebase User type
-  authLoading: boolean;
   setView: (view: AppState['view']) => void;
   setAnswer: (id: string, answer: string) => void;
   nextQuestion: () => void;
   prevQuestion: () => void;
-  setCurriculum: (c: Curriculum | null) => void;
-  setUser: (user: any | null) => void;
-  setAuthLoading: (loading: boolean) => void;
+  setCurriculum: (c: Curriculum) => void;
   reset: () => void;
 }

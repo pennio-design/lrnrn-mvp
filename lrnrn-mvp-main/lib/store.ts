@@ -1,13 +1,12 @@
+
 import { create } from 'zustand';
-import { AppState, Curriculum } from './types';
+import { AppState } from './types';
 
 export const useStore = create<AppState>((set) => ({
   view: 'landing',
   currentQuestionIndex: 0,
   answers: {},
   curriculum: null,
-  user: null,
-  authLoading: true,
   setView: (view) => set({ view }),
   setAnswer: (id, answer) => set((state) => ({
     answers: { ...state.answers, [id]: answer }
@@ -18,12 +17,7 @@ export const useStore = create<AppState>((set) => ({
   prevQuestion: () => set((state) => ({
     currentQuestionIndex: Math.max(0, state.currentQuestionIndex - 1)
   })),
-  setCurriculum: (curriculum: Curriculum | null) => set((state) => ({ 
-    curriculum, 
-    view: curriculum ? 'curriculum' : (state.view === 'generating' ? 'curriculum' : state.view) 
-  })),
-  setUser: (user) => set({ user }),
-  setAuthLoading: (authLoading) => set({ authLoading }),
+  setCurriculum: (curriculum) => set({ curriculum, view: 'curriculum' }),
   reset: () => set({
     view: 'landing',
     currentQuestionIndex: 0,

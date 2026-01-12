@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useStore } from '../lib/store';
 import { DIAGNOSTIC_QUESTIONS } from '../lib/questions';
@@ -59,7 +60,7 @@ export default function QuestionFlow() {
         <div className="space-y-2">
           <span className="text-amber-500 font-mono text-sm uppercase tracking-wider">Diagnostic 0{currentQuestionIndex + 1}</span>
           <h2 className="text-3xl font-bold">{q.label}</h2>
-          <p className="text-slate-400 text-lg Foundation-relaxed">{q.prompt}</p>
+          <p className="text-slate-400 text-lg leading-relaxed">{q.prompt}</p>
         </div>
 
         <div className="space-y-4">

@@ -1,3 +1,4 @@
+
 import { Question } from './types';
 
 export const DIAGNOSTIC_QUESTIONS: Question[] = [

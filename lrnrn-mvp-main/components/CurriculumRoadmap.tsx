@@ -1,14 +1,21 @@
+
 import React, { useState } from 'react';
 import { useStore } from '../lib/store';
 import { CurriculumNode } from '../lib/types';
-import { saveCurriculum } from '../lib/db';
-import { Clock, BookOpen, ExternalLink, ChevronRight, CheckCircle, Brain, Save, Check, Loader2 } from 'lucide-react';
+import { Clock } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
+import { Brain } from 'lucide-react';
 
+// Added key to props definition to satisfy TypeScript when component is used within a map()
 const NodeCard = ({ node, index }: { node: CurriculumNode; index: number; key?: React.Key }) => {
   const [expanded, setExpanded] = useState(false);
 
   return (
     <div className="relative group">
+      {/* Dependency Line */}
       {index !== 0 && (
         <div className="absolute -top-8 left-1/2 w-0.5 h-8 bg-slate-200" />
       )}
@@ -92,28 +99,7 @@ const NodeCard = ({ node, index }: { node: CurriculumNode; index: number; key?: 
 };
 
 export default function CurriculumRoadmap() {
-  const { curriculum, reset, user, setView } = useStore();
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-
-  const handleSave = async () => {
-    if (!user) {
-      setView('auth');
-      return;
-    }
-    if (!curriculum) return;
-
-    setSaving(true);
-    try {
-      await saveCurriculum(user.uid, curriculum);
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setSaving(false);
-    }
-  };
+  const { curriculum, reset } = useStore();
 
   if (!curriculum) return null;
 
@@ -121,21 +107,6 @@ export default function CurriculumRoadmap() {
     <div className="min-h-screen bg-slate-50 py-12 px-6">
       <div className="max-w-4xl mx-auto space-y-12">
         <header className="text-center space-y-4">
-          <div className="flex items-center justify-between mb-4">
-             <button onClick={reset} className="text-slate-400 hover:text-slate-900 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
-               <ChevronRight size={14} className="rotate-180" /> Back to start
-             </button>
-             <button 
-               onClick={handleSave}
-               disabled={saving}
-               className={`flex items-center gap-2 px-5 py-2 rounded-full text-sm font-bold transition-all shadow-sm
-                 ${saved ? 'bg-success/10 text-success border border-success/20' : 'bg-slate-900 text-white hover:bg-slate-800'}`}
-             >
-               {saving ? <Loader2 size={16} className="animate-spin" /> : saved ? <Check size={16} /> : <Save size={16} />}
-               {saved ? 'Saved to Profile' : 'Save Strategy'}
-             </button>
-          </div>
-
           <div className="inline-flex items-center gap-2 bg-slate-900 text-white px-4 py-1 rounded-full text-sm font-bold">
             LRNRN STRATEGY
           </div>

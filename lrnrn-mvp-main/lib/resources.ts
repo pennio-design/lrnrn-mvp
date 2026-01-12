@@ -1,3 +1,4 @@
+
 export interface ResourceTemplate {
   source: string;
   type: 'video' | 'text' | 'docs' | 'interactive';
